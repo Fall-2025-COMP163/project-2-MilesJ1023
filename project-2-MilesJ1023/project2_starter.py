@@ -66,7 +66,7 @@ class Character:
         self.strength = float(strength)
         self.magic = float(magic)
         self.weapon = None 
-        self.charachter_class = "Character"
+        self.character_class = "Character"
         # TODO: Set the character's name, health, strength, and magic
         # These should be stored as instance variables
         
@@ -88,20 +88,18 @@ class Character:
         # Use target.take_damage(damage) to apply damage
         
         
-    def take_damage(self, damage):
+    def take_damage(self, amount):
         """
         Reduces this character's health by the damage amount.
         Health should never go below 0.
         """
-        if isinstance(damage, (int, float)) is False:
-            damage = 0.0
-        if damage < 0:
-            damage = 0.0
-        if damage > 10000:
-            damage = 10000.0
-        self.health = self.health - damage
+        if not isinstance(amount, (int, float)):
+            amount = 0
+        if amount < 0:
+            amount = 0
+        self.health -= amount
         if self.health < 0:
-            self.health = 0.0
+            self.health = 0
         return self.health
         
         
@@ -115,8 +113,7 @@ class Character:
         """
         Prints the character's current stats in a nice format.
         """
-        print(f"{self.name} ({getattr(self, 'character_class', 'Character')}): "
-              f"HP={self.health}, STR={self.strength}, MAG={self.magic}")
+        print(f"{self.name} ({self.character_class}): HP={self.health}, STR={self.strength}, MAG={self.magic}")
 
         # TODO: Print character's name, health, strength, and magic
         # Make it look nice with formatting
@@ -147,10 +144,7 @@ class Player(Character):
         Override the parent's display_stats to show additional player info.
         Should show everything the parent shows PLUS player-specific info.
         """
-        print(
-            f"{self.name} ({self.character_class}) -> "
-            f"HP={self.health}, STR={self.strength}, MAG={self.magic}"
-        )
+        print(f"{self.name} ({self.character_class}) -> HP={self.health}, STR={self.strength}, MAG={self.magic}, LVL={self.level}, EXP={self.experience}")
 
         # TODO: Call the parent's display_stats method using super()
         # TODO: Then print additional player info like class and level
@@ -304,7 +298,7 @@ class Weapon:
         """
         Display information about this weapon.
         """
-        return f"Weapon: {self.name}, Damage Bonus: +{self.damage_bonus}"
+        print(f"Weapon: {self.name}, Damage Bonus: +{self.damage_bonus}")
         # TODO: Print weapon name and damage bonus
         
 
