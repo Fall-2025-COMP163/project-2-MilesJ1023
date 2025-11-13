@@ -61,7 +61,7 @@ class Character:
     
     def __init__(self, name, health, strength, magic):
         """Initialize basic character attributes"""
-        self.name = name
+        self.name = str(name)
         self.health = float(health)
         self.strength = float(strength)
         self.magic = float(magic)
@@ -78,9 +78,9 @@ class Character:
         2. Apply damage to the target
         3. Print what happened
         """
-        damage = max(0, self.strength)  # base damage calculation no class
+        damage = self.strength  # base damage calculation no class
         if self.weapon:
-            damage += self.weapon.damage_bonus
+            damage += float(self.weapon.damage_bonus)
         target.take_damage(damage)
         return damage
         # TODO: Implement basic attack
@@ -93,9 +93,19 @@ class Character:
         Reduces this character's health by the damage amount.
         Health should never go below 0.
         """
-        damage = max(0, float(damage))
-        self.health = max(0, self.health - damage)
+        if isinstance(damage, (int, float)) is False:
+            damage = 0.0
+        if damage < 0:
+            damage = 0.0
+        if damage > 10000:
+            damage = 10000.0
+        self.health = self.health - damage
+        if self.health < 0:
+            self.health = 0.0
         return self.health
+        
+        
+        
         # TODO: Implement taking damage
         # Reduce self.health by damage amount
         # Make sure health doesn't go below 0
@@ -105,16 +115,12 @@ class Character:
         """
         Prints the character's current stats in a nice format.
         """
-        info = (
-            f"Name: {self.name}\n"
-            f"Health: {int(self.health)}\n"
-            f"Strength: {int(self.strength)}\n"
-            f"Magic: {int(self.magic)}"
-        )
-        if self.weapon:
-            info += f"\nWeapon: {self.weapon.name} (+{self.weapon.damage_bonus})"
-        print(info)
-        return info
+        return {
+            "Name": self.name,
+            "Health": self.health,
+            "Strength": self.strength,
+            "Magic": self.magic,
+        }
 
         # TODO: Print character's name, health, strength, and magic
         # Make it look nice with formatting
@@ -131,10 +137,10 @@ class Player(Character):
         Initialize a player character.
         Should call the parent constructor and add player-specific attributes.
         """
-    super().__init__(name, health, strength, magic)
-    self.character_class = character_class
-    self.level = 1
-    self.experience = 0
+        super().__init__(name, health, strength, magic)
+        self.character_class = str(character_class)
+        self.level = 1
+        self.experience = 0
         # TODO: Call super().__init__() with the basic character info
         # TODO: Store the character_class (like "Warrior", "Mage", etc.)
         # TODO: Add any other player-specific attributes (level, experience, etc.)
@@ -145,19 +151,13 @@ class Player(Character):
         Override the parent's display_stats to show additional player info.
         Should show everything the parent shows PLUS player-specific info.
         """
-        info = (
-            f"Name: {self.name}\n"
-            f"Class: {self.character_class}\n"
-            f"Level: {self.level}\n"
-            f"Experience: {self.experience}\n"
-            f"Health: {int(self.health)}\n"
-            f"Strength: {int(self.strength)}\n"
-            f"Magic: {int(self.magic)}"
-        )
-        if self.weapon:
-            info += f"\nWeapon: {self.weapon.name} (+{self.weapon.damage_bonus})"
-        print(info)
-        return info
+        base = super().display_stats()
+        base.update({
+            "Class": self.character_class,
+            "Level": self.level,
+            "Experience": self.experience
+        })
+        return base
 
         # TODO: Call the parent's display_stats method using super()
         # TODO: Then print additional player info like class and level
@@ -314,7 +314,10 @@ class Weapon:
         Create a weapon with a name and damage bonus.
         """
         self.name = str(name)
-        self.damage_bonus = damage_bonus
+        if isinstance(damage_bonus, (int, float)):
+            self.damage_bonus = float(damage_bonus)
+        else:
+            self.damage_bonus = 0.0
         # TODO: Store weapon name and damage bonus
         
         
@@ -322,9 +325,7 @@ class Weapon:
         """
         Display information about this weapon.
         """
-        info = f" Weapon: {self.name}, Damage Bonus: {int(self.damage_bonus)}"
-        print(info)
-        return info
+        return f"Weapon: {self.name}, Damage Bonus: +{self.damage_bonus}"
         # TODO: Print weapon name and damage bonus
         
 
