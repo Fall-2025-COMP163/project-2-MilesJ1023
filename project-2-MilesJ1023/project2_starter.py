@@ -62,9 +62,9 @@ class Character:
     def __init__(self, name, health, strength, magic):
         """Initialize basic character attributes"""
         self.name = str(name)
-        self.health = float(health)
-        self.strength = float(strength)
-        self.magic = float(magic)
+        self.health = int(health)
+        self.strength = int(strength)
+        self.magic = int(magic)
         self.weapon = None 
         self.character_class = "Character"
         # TODO: Set the character's name, health, strength, and magic
@@ -79,7 +79,7 @@ class Character:
         2. Apply damage to the target
         3. Print what happened
         """
-        damage = max(0, int(self.strength)) # basic damage calculation
+        damage = max(0, self.strength) # basic damage calculation
         if hasattr(target, "take_damage"):
             target.take_damage(damage)
         return damage
@@ -95,13 +95,11 @@ class Character:
         """
         if not isinstance(amount, (int, float)):
             amount = 0
-        if amount < 0:
-            amount = 0
+        amount = max(0, min(int(amount), 1000))  # clamp range
         self.health -= amount
         if self.health < 0:
             self.health = 0
         return self.health
-        
         
         
         # TODO: Implement taking damage
@@ -144,7 +142,8 @@ class Player(Character):
         Override the parent's display_stats to show additional player info.
         Should show everything the parent shows PLUS player-specific info.
         """
-        print(f"{self.name} ({self.character_class}) -> HP={self.health}, STR={self.strength}, MAG={self.magic}, LVL={self.level}, EXP={self.experience}")
+        super().display_stats()
+        print(f"LVL={self.level}, EXP={self.experience}")
 
         # TODO: Call the parent's display_stats method using super()
         # TODO: Then print additional player info like class and level
@@ -184,7 +183,7 @@ class Warrior(Player):
         """
         Special warrior ability - a powerful attack that does extra damage.
         """
-        damage = self.strength * 2
+        damage = int(self.strength * 2)
         if hasattr(target, "take_damage"):
             target.take_damage(damage)
         return damage
@@ -225,7 +224,7 @@ class Mage(Player):
         """
         Special mage ability - a powerful magical attack.
         """
-        damage = self.magic * 2
+        damage = int(self.magic * 2)
         if hasattr(target, "take_damage"):
             target.take_damage(damage)
         return damage
@@ -267,7 +266,7 @@ class Rogue(Player):
         """
         Special rogue ability - guaranteed critical hit.
         """
-        damage = self.strength * 2.5
+        damage = int(self.strength * 2.5)
         if hasattr(target, "take_damage"):
             target.take_damage(damage)
         return damage
@@ -288,7 +287,7 @@ class Weapon:
         """
         self.name = str(name)
         if isinstance(damage_bonus, (int, float)):
-            self.damage_bonus = float(damage_bonus)
+            self.damage_bonus = int(damage_bonus)
         else:
             self.damage_bonus = 0.0
         # TODO: Store weapon name and damage bonus
