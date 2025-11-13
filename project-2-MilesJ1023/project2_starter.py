@@ -66,6 +66,7 @@ class Character:
         self.strength = float(strength)
         self.magic = float(magic)
         self.weapon = None 
+        self.charachter_class = "Character"
         # TODO: Set the character's name, health, strength, and magic
         # These should be stored as instance variables
         
@@ -78,10 +79,9 @@ class Character:
         2. Apply damage to the target
         3. Print what happened
         """
-        damage = self.strength  # base damage calculation no class
-        if self.weapon:
-            damage += float(self.weapon.damage_bonus)
-        target.take_damage(damage)
+        damage = max(0, int(self.strength)) # basic damage calculation
+        if hasattr(target, "take_damage"):
+            target.take_damage(damage)
         return damage
         # TODO: Implement basic attack
         # Damage should be based on self.strength
@@ -115,12 +115,8 @@ class Character:
         """
         Prints the character's current stats in a nice format.
         """
-        return {
-            "Name": self.name,
-            "Health": self.health,
-            "Strength": self.strength,
-            "Magic": self.magic,
-        }
+        print(f"{self.name} ({getattr(self, 'character_class', 'Character')}): "
+              f"HP={self.health}, STR={self.strength}, MAG={self.magic}")
 
         # TODO: Print character's name, health, strength, and magic
         # Make it look nice with formatting
@@ -151,13 +147,10 @@ class Player(Character):
         Override the parent's display_stats to show additional player info.
         Should show everything the parent shows PLUS player-specific info.
         """
-        base = super().display_stats()
-        base.update({
-            "Class": self.character_class,
-            "Level": self.level,
-            "Experience": self.experience
-        })
-        return base
+        print(
+            f"{self.name} ({self.character_class}) -> "
+            f"HP={self.health}, STR={self.strength}, MAG={self.magic}"
+        )
 
         # TODO: Call the parent's display_stats method using super()
         # TODO: Then print additional player info like class and level
@@ -184,11 +177,9 @@ class Warrior(Player):
         Override the basic attack to make it warrior-specific.
         Warriors should do extra physical damage.
         """
-        damage = self.strength + 5  # extra damage for warriors
-        if self.weapon:
-            damage += self.weapon.damage_bonus
-
-        target.take_damage(damage)
+        damage = max(0, int(self.strength))
+        if hasattr(target, "take_damage"):
+            target.take_damage(damage)
         return damage
         # TODO: Implement warrior attack
         # Should do more damage than basic attack
@@ -199,10 +190,9 @@ class Warrior(Player):
         """
         Special warrior ability - a powerful attack that does extra damage.
         """
-        damage = self.strength * 2  # power strike does double strength damage
-        if self.weapon:
-            damage += self.weapon.damage_bonus
-        target.take_damage(damage)
+        damage = self.strength * 2
+        if hasattr(target, "take_damage"):
+            target.take_damage(damage)
         return damage
         # TODO: Implement power strike
         # Should do significantly more damage than regular attack
@@ -229,10 +219,9 @@ class Mage(Player):
         Override the basic attack to make it magic-based.
         Mages should use magic for damage instead of strength.
         """
-        damage = self.magic  # magic-based damage
-        if self.weapon:
-            damage += self.weapon.damage_bonus
-        target.take_damage(damage)
+        damage = max(0, int(self.magic))
+        if hasattr(target, "take_damage"):
+            target.take_damage(damage)
         return damage
         # TODO: Implement mage attack
         # Should use self.magic for damage calculation instead of strength
@@ -242,12 +231,10 @@ class Mage(Player):
         """
         Special mage ability - a powerful magical attack.
         """
-        damage = self.magic * 2  # fireball does double magic damage
-        if self.weapon:
-            damage += self.weapon.damage_bonus
-        target.take_damage(damage)
+        damage = self.magic * 2
+        if hasattr(target, "take_damage"):
+            target.take_damage(damage)
         return damage
-
         # TODO: Implement fireball spell
         # Should do magic-based damage with bonus
         
@@ -273,17 +260,10 @@ class Rogue(Player):
         Override the basic attack to make it rogue-specific.
         Rogues should have a chance for extra damage (critical hits).
         """
-        import random
-        damage = self.strength
-        if self.weapon:
-            damage += self.weapon.damage_bonus
-        crit_chance = random.randint(1, 10)
-        if crit_chance <= 3:  # 30% chance for critical hit
-            damage *= 2
-            print(f"Critical Hit!!!")
-        target.take_damage(damage)
+        damage = max(0, int(self.strength))
+        if hasattr(target, "take_damage"):
+            target.take_damage(damage)
         return damage
-        
         # TODO: Implement rogue attack
         # Could add a chance for critical hit (double damage)
         # Hint: use random.randint(1, 10) and if result <= 3, it's a crit
@@ -293,10 +273,9 @@ class Rogue(Player):
         """
         Special rogue ability - guaranteed critical hit.
         """
-        damage = self.strength * 3  # guaranteed critical hit
-        if self.weapon:
-            damage += self.weapon.damage_bonus
-        target.take_damage(damage)
+        damage = self.strength * 2.5
+        if hasattr(target, "take_damage"):
+            target.take_damage(damage)
         return damage
 
         # TODO: Implement sneak attack
